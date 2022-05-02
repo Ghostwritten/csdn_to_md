@@ -11,7 +11,7 @@ $ git clone https://github.com/Ghostwritten/csdn_to_md.git
 
 chrome浏览器登陆csdn平台，按"F12"找到自己网页cookie,选择部分cookie内容复制至csdn_to_md.py脚本109行。
 
-<div align=center>![获取cookie](https://github.com/Ghostwritten/csdn_to_md/blob/main/cookie.png)</div>
+![获取cookie](https://github.com/Ghostwritten/csdn_to_md/blob/main/cookie.png)
 
 ## 演示
 * [观看视频](https://www.bilibili.com/video/bv1bL4y1c7UK)
