@@ -1,6 +1,5 @@
 # csdn 文章批量转换markdown格式下载至本地
 
----
 ## 1. 背景
 
 最近准备搭建新博客,尽管csdn的在线编辑、发布、专栏、自定义模块、模板等比较成熟,但实在没有美感,这一点令人比较失望，但在线编辑确实速度会很快，做笔记非常方便，检索也还算可以,前阵[阿里云开发者社区](https://developer.aliyun.com/)、[infoQ中国社区](https://www.infoq.cn/)运营人员相继邀请去他们平台发布，但我更想尝试本地利用[Obsidian](https://obsidian.md/)工具编写笔记试试，并同步[github](https://github.com/)或[gitee](https://gitee.com/)仓库存储,博客也许会以github page依托利用[hexo](https://hexo.io/zh-cn/)、[Jekyll](https://jekyllcn.com/)等工具发布，如果还可以同步[notion](https://www.notion.so/)或[云雀](https://www.yuque.com/)就更完美。
@@ -26,7 +25,7 @@ chrome浏览器登陆csdn平台，按"F12"找到自己网页cookie,选择部分c
 ![获取cookie](https://github.com/Ghostwritten/csdn_to_md/blob/main/cookie.png)
 
 ## 5. 演示
-* [观看视频](https://www.bilibili.com/video/bv1bL4y1c7UK)
+* [观看视频]([https://www.bilibili.com/video/bv1bL4y1c7UK](https://mp.weixin.qq.com/s?__biz=MzUxODY3MDM4MQ==&mid=2247485122&idx=1&sn=eebd24dd5d3dbbbbd07258cd704b31cb&chksm=f9841780cef39e96a9b9f85d8daa940cb90ea500ddac50cdf6d09c55bdcc4394ef5e5cfe8c54&token=14114342&lang=zh_CN#rd))
 
 ```bash
 $ python3 csdn_to_md.py -i  xixihahalelehehe
