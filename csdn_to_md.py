@@ -20,7 +20,7 @@ def request_blog_column(id):
     
     urls = 'https://blog.csdn.net/' + id
     reply = requests.get(url=urls,headers=headers)
-    parse = BeautifulSoup(reply.content, "lxml")
+    parse = BeautifulSoup(reply.content, "html.parser")
     spans = parse.find_all('a', attrs={'class':'special-column-name'})
 
     blog_columns = []
@@ -28,12 +28,15 @@ def request_blog_column(id):
     for span in spans:
           href = re.findall(r'href=\"(.*?)\".*?',str(span),re.S)
           href = ''.join(href)
+         # print(href)
 
           headers = {
           'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36'
           }
           blog_column_reply = requests.get(url=href,headers=headers)
-          blogs_num = re.findall(r'<a class="clearfix special-column-name" target="_blank" href=\"'+ href +'\".*?<span class="special-column-num">(.+?)篇</span>',blog_column_reply.text,re.S)
+         # print(blog_column_reply)
+          blogs_num = re.findall(r'<a class="clearfix special-column-name"  href=\"'+ href +'\".*?<span class="special-column-num">(.+?)篇</span>',blog_column_reply.text,re.S)
+         # print(str(blogs_num[0]))
           blogs_column_num = str(blogs_num[0])
 
 
@@ -46,6 +49,7 @@ def request_blog_column(id):
           blog_id = href.split("_")[-1]
           blog_id = blog_id.split(".")[0]
           blog_columns.append([href,blog_column,blog_id,blogs_column_num])
+        #  print(blog_columns)
           
  
 
@@ -59,7 +63,7 @@ def request_blog_list(id):
         blog_column_name = blog_column[1]
         blog_column_id = blog_column[2]
         blog_column_num = int(blog_column[3])
-     
+        #print(blog_column_url) 
 
         if blog_column_num > 40: 
            page_num = round(blog_column_num/40)
@@ -70,10 +74,13 @@ def request_blog_list(id):
                append_blog_info(blog_column_url,blog_column_name,blogs)
            blog_column_url = blog_column[0]
            blogs = append_blog_info(blog_column_url,blog_column_name,blogs)
+        #   print(blogs)
                
         else:
            blogs = append_blog_info(blog_column_url,blog_column_name,blogs)
-
+        #   print(blogs)
+   
+    #print(blogs)
     return blogs
 
 
@@ -82,7 +89,7 @@ def append_blog_info(blog_column_url,blog_column_name,blogs):
       'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36'
     }
     reply = requests.get(url=blog_column_url,headers=headers)
-    blog_span = BeautifulSoup(reply.content, "lxml")
+    blog_span = BeautifulSoup(reply.content, "html.parser")
     blogs_list = blog_span.find_all('ul', attrs={'class':'column_article_list'})
     for arch_blog_info in blogs_list:
         blogs_list = arch_blog_info.find_all('li')
@@ -106,13 +113,14 @@ def request_md(id):
         url = f"https://blog-console-api.csdn.net/v1/editor/getArticle?id={blog_id}"
         headers = {
         
-         "Cookie": "uuid_tt_dd=20_18815108270-1651420958061-407001;dc_session_id=10_1651420958062.474827;acw_tc=276077c116514209580398703eb6ccd1972794b4689cf3b5039f85506a6146;UserName=hahalelehehe; UserInfo=30ee073e05d84844b34a829ef0d80541; UserToken=30ee073e05d84844b34a829ef0d80541; UserNick=ghostwritten; AU=5F9; BT=1651420447587; Hm_up_6bcd52f51e9b3dce32bec4a3997715ac=%7B%22islogin%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%2C%22isonline%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%2C%22isvip%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%2C%22uid_%22%3A%7B%22value%22%3A%22xixihahalelehehe%22%2C%22scope%22%3A1%7D%7D; log_Id_click=1111; c_pref=https%3A//i.csdn.net/; c_ref=https%3A//blog.csdn.net/xixihahalelehehe%3Fspm%3D1010.2135.3001.5343; c_page_id=default; dc_tos=rb7pev; log_Id_pv=1346; Hm_lpvt_6bcd52f51e9b3dce32bec4a3997715ac=1651422057; log_Id_view=2182;",
+         #"Cookie": "uuid_tt_dd=20_18815108270-1651420958061-407001;dc_session_id=10_1651420958062.474827;acw_tc=276077c116514209580398703eb6ccd1972794b4689cf3b5039f85506a6146;UserName=hahalelehehe; UserInfo=30ee073e05d84844b34a829ef0d80541; UserToken=30ee073e05d84844b34a829ef0d80541; UserNick=ghostwritten; AU=5F9; BT=1651420447587; Hm_up_6bcd52f51e9b3dce32bec4a3997715ac=%7B%22islogin%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%2C%22isonline%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%2C%22isvip%22%3A%7B%22value%22%3A%221%22%2C%22scope%22%3A1%7D%2C%22uid_%22%3A%7B%22value%22%3A%22xixihahalelehehe%22%2C%22scope%22%3A1%7D%7D; log_Id_click=1111; c_pref=https%3A//i.csdn.net/; c_ref=https%3A//blog.csdn.net/xixihahalelehehe%3Fspm%3D1010.2135.3001.5343; c_page_id=default; dc_tos=rb7pev; log_Id_pv=1346; Hm_lpvt_6bcd52f51e9b3dce32bec4a3997715ac=1651422057; log_Id_view=2182;",
          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36"
            
         }
         data = {"id": blog_id}
         reply = requests.get(url, headers=headers,data=data)
         reply_data = reply.json()
+    #    print(reply_data)
 
         try:
            key = "key" + str(uuid.uuid4())
