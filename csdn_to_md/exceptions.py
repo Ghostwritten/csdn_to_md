@@ -1,0 +1,2 @@
+class CSDNExportError(Exception):
+    pass

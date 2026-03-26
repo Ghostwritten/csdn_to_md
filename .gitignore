@@ -1,0 +1,11 @@
+.DS_Store
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.swp
+
+# 导出结果目录（运行时生成，不纳入版本控制）
+exports/
+test_output/

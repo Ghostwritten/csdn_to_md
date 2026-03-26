@@ -7,10 +7,11 @@
 ## 2.功能
 
 - 1. 通过传入id确立个人用户主页；
-- 2. 创建个人博客目录，专栏目录；
+- 2. 创建个人博客目录、专栏目录；
 - 3. 获取专栏URL、名称、篇数量；
 - 4. 依靠专栏URL获取对应的多页文章URL、标题；
-- 5. 遍历文章URL通过cookie获取文章内容并转换markdown格式。
+- 5. 遍历文章URL通过cookie获取文章内容并转换markdown格式；
+- 6. **自动下载文章内嵌图片到本地**，存放于各分类目录的 `images/` 子目录，并将 markdown 中的远程图片链接替换为本地相对路径（`./images/`）。
 
 ## 3. 下载
 
@@ -18,17 +19,62 @@
 $ git clone https://github.com/Ghostwritten/csdn_to_md.git 
 ```
 
-## 4. 配置
+## 项目结构
 
-chrome浏览器登陆csdn平台，按"F12"找到自己网页cookie,选择部分cookie内容复制至csdn_to_md.py脚本109行。
+第二阶段后，项目按轻量模块化组织：
+
+```text
+csdn_to_md.py          # 兼容旧用法的入口脚本
+csdn_to_md/
+	cli.py              # 命令行解析与流程调度
+	config.py           # 常量与日志配置
+	exceptions.py       # 自定义异常
+	exporter.py         # 导出主流程
+	http_client.py      # 请求重试与会话封装
+	models.py           # 数据模型
+	utils.py            # 路径和 ID 解析工具
+tests/
+	test_utils.py
+	test_exporter.py
+```
+
+## 4. 环境要求
+
+- Python 3.9+
+- 依赖见 requirements.txt
+
+安装依赖：
+
+```bash
+pip install -r requirements.txt
+```
+
+> **注意**：本项目使用 [`curl_cffi`](https://github.com/yifeikong/curl_cffi) 模拟 Chrome 浏览器的真实 TLS 指纹，以绕过 Cloudflare 等反爬机制，请勿替换为标准 `requests` 库。
+
+## 5. 配置
+
+Chrome 浏览器登录 CSDN 平台，按 F12 找到当前登录态 Cookie。
+
+推荐通过环境变量传入，而不是直接修改源码：
+
+```bash
+export CSDN_COOKIE='你的_cookie'
+```
+
+也可以通过命令行参数传入：
+
+```bash
+python3 csdn_to_md.py -i xixihahalelehehe --cookie '你的_cookie'
+```
 
 ![获取cookie](https://github.com/Ghostwritten/csdn_to_md/blob/main/cookie.png)
 
-## 5. 演示
+## 6. 演示
 * [观看视频](https://www.youtube.com/watch?v=vVJJDB0xQfA&t=25s)
 
 ```bash
-$ python3 csdn_to_md.py -i  xixihahalelehehe
+$ export CSDN_COOKIE='你的_cookie'
+$ python3 csdn_to_md.py -i xixihahalelehehe
 download blog markdown blog:【helm】helm_快速学习手册
 download blog markdown blog:【helm】如何开发一个完整的Helm_charts应用实例
 download blog markdown blog:【helm】helm_将yaml文件转换json的插件helm-schema-gen
@@ -103,7 +149,44 @@ $ /xixihahalelehehe# tree
 │   └── 运维之思科篇_-----6.思科项目练习.md
 
 ```
-## 6. 技术
+
+支持自定义输出目录：
+
+```bash
+python3 csdn_to_md.py -i xixihahalelehehe -o ./exports
+```
+
+如需跳过图片下载、保留原始远程链接，使用 `--no-images` 标志：
+
+```bash
+python3 csdn_to_md.py -i xixihahalelehehe -o ./exports --no-images
+```
+
+脚本完成后会输出总数、成功数和失败数；如果 Cookie 失效、网络超时或接口异常，会明确打印错误信息。
+
+### 输出目录结构
+
+下载完成后，每个分类目录下会生成 `images/` 子目录用于存放该分类的本地图片：
+
+```text
+xixihahalelehehe/
+├── 云原生/
+│   ├── images/
+│   │   ├── 119548181_01.png
+│   │   ├── 119548181_02.png
+│   │   └── ...
+│   ├── Kubernetes_声明式API.md
+│   └── ...
+├── ansible/
+│   ├── images/
+│   │   └── ...
+│   └── ...
+└── ...
+```
+
+图片命名规则为 `{文章ID}_{序号:02d}.{扩展名}`，例如 `119548181_01.png`。
+
+## 7. 技术
 
 - [python json](https://blog.csdn.net/xixihahalelehehe/article/details/106550900)
 - [python os](https://blog.csdn.net/xixihahalelehehe/article/details/104253123)
@@ -118,7 +201,13 @@ $ /xixihahalelehehe# tree
 - [python 计算之除法](https://blog.csdn.net/xixihahalelehehe/article/details/124549366)
 - [python range()](https://ghostwritten.blog.csdn.net/article/details/124549150)
 
-## 7. 参考
+## 8. 常见问题
+
+- 缺少 Cookie：脚本会直接退出，请通过 --cookie 或环境变量 CSDN_COOKIE 提供。
+- Cookie 失效：如果接口未返回 markdowncontent，通常是登录态已过期，需要重新从浏览器获取。
+- 文件名异常：脚本会自动替换路径中的非法字符，避免创建文件失败。
+
+## 9. 参考
 - [https://blog.csdn.net/pang787559613/article/details/105444286](https://blog.csdn.net/pang787559613/article/details/105444286)
 
 
